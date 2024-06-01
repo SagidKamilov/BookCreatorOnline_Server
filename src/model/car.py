@@ -1,33 +1,19 @@
 #Other libraries
-from sqlalchemy import String, Integer, Text, Enum
+from sqlalchemy import String, Integer, Text, ForeignKey, Boolean
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from typing import Dict
+from typing import Dict, List
 
 
 #Local
 from src.model.base import Base
 
 
-class BodyType(Enum):
-    """Body type for car"""
-
-    EASY: str = "Малотоннажный грузовик" # weight <= 2.5t
-    MEDIUM: str = "Среднетоннажный грузовик" # 5 <= weight <= 10t
-    HEAVY: str = "Большегрузная машина" # 5 <= weight <= 30
-
-
-class BodyDimension(Enum):
-    """Body dimension for car"""
-
-    ...
-
-
 class Car(Base):
 
     name: Mapped[str] = mapped_column(name="name_car", type_=String(250), nullable=True, index=True)
-    body_type: Mapped[str] = mapped_column(name="body_type", type_=Enum(BodyType), nullable=True)
+    body_type: Mapped[str] = mapped_column(name="body_type", type_=String(150), nullable=True)
     #Question
-    body_dimensions: Mapped[str] = mapped_column(name="body_dimensions", type_=Enum(BodyDimension), nullable=True)
+    body_dimensions: Mapped[str] = mapped_column(name="body_dimensions", type_=String(150), nullable=True)
     car_registration_number: Mapped[int] = mapped_column(name="car_registration_number", type_=Integer, nullable=True)
     #Question
     car_brand_photo: Mapped[str] = mapped_column(name="car_brand_photo", type_=Text, nullable=True)
@@ -42,9 +28,12 @@ class Car(Base):
                                                              type_=Text, nullable=False)
     photo_trailer_passport_additional: Mapped[str] = mapped_column(name="photo_trailer_passport_additional",
                                                                    type_=Text, nullable=False)
+    workload_car: Mapped[bool] = mapped_column(type_=Boolean, name="workload_car", default=False, nullable=False)
+    id_carrier: Mapped[int] = mapped_column(ForeignKey("Carrier.id"), name="id_carrier")
 
-    #Relation
-    order: Mapped["Order"] = relationship("Order", back_populates="car")
+    #Relations
+    carrier: Mapped["Carrier"] = relationship(back_populates="car_carrier", uselist=False)
+    order: Mapped[List["Order"]] = relationship(back_populates="car", uselist=True)
 
     def __repr__(self):
 

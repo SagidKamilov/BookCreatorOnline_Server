@@ -1,8 +1,8 @@
 #Other libraries
 from sqlalchemy import Integer, String, DateTime, Boolean
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 from datetime import datetime
-from typing import Dict
+from typing import Dict, List
 
 #Local
 from src.model.base import Base
@@ -31,6 +31,10 @@ class Carrier(Base):
     taken_orders: Mapped[int] = mapped_column(name="taken_orders", type_=Integer, nullable=False, default=0)
     completed_orders: Mapped[int] = mapped_column(name="completed_orders", type_=Integer, nullable=False, default=0)
     rating: Mapped[int] = mapped_column(name="rating", type_=Integer, nullable=False, default=0)
+
+    #Relations
+    car_carrier: Mapped[List["Car"]] = relationship(back_populates="carrier", uselist=True)
+    driver: Mapped["Driver"] = relationship(back_populates="carrier")
 
     def __repr__(self):
         res_dict: Dict[str, str] = {
